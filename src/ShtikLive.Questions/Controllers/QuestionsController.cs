@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -27,15 +26,37 @@ namespace ShtikLive.Questions.Controllers
             _redis = redis;
         }
 
-        [HttpGet("{presenter}/{slug}/{slide:int}")]
-        public async Task<IActionResult> GetForSlide(string presenter, string slug, int slide, CancellationToken ct)
+        [HttpGet("{presenter}/{slug}")]
+        public async Task<IActionResult> GetForShow(string presenter, string slug, CancellationToken ct)
         {
-            var identifier = $"{presenter}/{slug}/{slide}";
+            var showIdentifier = $"{presenter}/{slug}";
             List<Question> questions;
             try
             {
                 questions = await _context.Questions
-                    .Where(q => q.SlideIdentifier == identifier)
+                    .Where(q => q.Show == showIdentifier)
+                    .OrderBy(q => q.Time)
+                    .Include(q => q.Answers)
+                    .ToListAsync(ct)
+                    .ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(EventIds.DatabaseError, ex, ex.Message);
+                throw;
+            }
+            return Ok(questions.Select(QuestionDto.FromQuestion));
+        }
+
+        [HttpGet("{presenter}/{slug}/{slide:int}")]
+        public async Task<IActionResult> GetForSlide(string presenter, string slug, int slide, CancellationToken ct)
+        {
+            var showIdentifier = $"{presenter}/{slug}";
+            List<Question> questions;
+            try
+            {
+                questions = await _context.Questions
+                    .Where(q => q.Show == showIdentifier && q.Slide == slide)
                     .OrderBy(q => q.Time)
                     .Include(q => q.Answers)
                     .ToListAsync(ct)
@@ -71,12 +92,13 @@ namespace ShtikLive.Questions.Controllers
         public async Task<IActionResult> Ask(string presenter, string slug, int slide,
             [FromBody] QuestionDto dto, CancellationToken ct)
         {
-            var identifier = $"{presenter}/{slug}/{slide}";
+            var identifier = $"{presenter}/{slug}";
 
             var question = new Question
             {
                 Uuid = Guid.NewGuid().ToString(),
-                SlideIdentifier = identifier,
+                Show = identifier,
+                Slide = slide,
                 Text = dto.Text,
                 User = dto.User,
                 Time = dto.Time
@@ -132,7 +154,7 @@ namespace ShtikLive.Questions.Controllers
                 _logger.LogError(EventIds.DatabaseError, ex, ex.Message);
                 throw;
             }
-            return Ok(answers.Select(AnswerDto.FromAnswer));
+            return Ok(answers.Select(a => AnswerDto.FromAnswer(uuid, a)));
         }
 
         [HttpPost("{uuid}/answers")]

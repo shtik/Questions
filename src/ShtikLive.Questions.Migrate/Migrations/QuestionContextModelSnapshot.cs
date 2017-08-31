@@ -46,8 +46,10 @@ namespace ShtikLive.Questions.Migrate.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("SlideIdentifier")
+                    b.Property<string>("Show")
                         .HasMaxLength(256);
+
+                    b.Property<int>("Slide");
 
                     b.Property<string>("Text");
 
@@ -61,7 +63,7 @@ namespace ShtikLive.Questions.Migrate.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SlideIdentifier");
+                    b.HasIndex("Show");
 
                     b.HasIndex("Uuid")
                         .IsUnique();

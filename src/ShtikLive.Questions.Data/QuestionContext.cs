@@ -23,7 +23,7 @@ namespace ShtikLive.Questions.Data
                 .IsUnique();
 
             builder.Entity<Question>()
-                .HasIndex(q => q.SlideIdentifier)
+                .HasIndex(q => q.Show)
                 .IsUnique(false);
         }
     }

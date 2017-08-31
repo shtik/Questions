@@ -12,7 +12,9 @@ namespace ShtikLive.Questions.Data
         public string Uuid { get; set; }
 
         [MaxLength(256)]
-        public string SlideIdentifier { get; set; }
+        public string Show { get; set; }
+
+        public int Slide { get; set; }
 
         [MaxLength(16)]
         public string User { get; set; }

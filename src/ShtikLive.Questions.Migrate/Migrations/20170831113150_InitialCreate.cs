@@ -15,7 +15,8 @@ namespace ShtikLive.Questions.Migrate.Migrations
                 {
                     Id = table.Column<int>(type: "int4", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    SlideIdentifier = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    Show = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true),
+                    Slide = table.Column<int>(type: "int4", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: true),
                     Time = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false),
                     User = table.Column<string>(type: "varchar(16)", maxLength: 16, nullable: true),
@@ -54,9 +55,9 @@ namespace ShtikLive.Questions.Migrate.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_SlideIdentifier",
+                name: "IX_Questions_Show",
                 table: "Questions",
-                column: "SlideIdentifier");
+                column: "Show");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_Uuid",

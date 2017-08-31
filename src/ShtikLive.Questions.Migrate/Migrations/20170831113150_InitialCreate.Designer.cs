@@ -11,7 +11,7 @@ using System;
 namespace ShtikLive.Questions.Migrate.Migrations
 {
     [DbContext(typeof(QuestionContext))]
-    [Migration("20170830225804_InitialCreate")]
+    [Migration("20170831113150_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,8 +47,10 @@ namespace ShtikLive.Questions.Migrate.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("SlideIdentifier")
+                    b.Property<string>("Show")
                         .HasMaxLength(256);
+
+                    b.Property<int>("Slide");
 
                     b.Property<string>("Text");
 
@@ -62,7 +64,7 @@ namespace ShtikLive.Questions.Migrate.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SlideIdentifier");
+                    b.HasIndex("Show");
 
                     b.HasIndex("Uuid")
                         .IsUnique();
