@@ -17,13 +17,11 @@ namespace ShtikLive.Questions.Controllers
     {
         private readonly QuestionContext _context;
         private readonly ILogger<QuestionsController> _logger;
-        private readonly ConnectionMultiplexer _redis;
 
-        public QuestionsController(QuestionContext context, ILogger<QuestionsController> logger, ConnectionMultiplexer redis)
+        public QuestionsController(QuestionContext context, ILogger<QuestionsController> logger)
         {
             _context = context;
             _logger = logger;
-            _redis = redis;
         }
 
         [HttpGet("{presenter}/{slug}")]
@@ -115,26 +113,7 @@ namespace ShtikLive.Questions.Controllers
                 throw;
             }
 
-            await PublishQuestionMessage(presenter, slug, slide, question).ConfigureAwait(false);
-
             return CreatedAtAction("Get", new {uuid = question.Uuid}, question);
-        }
-
-        private Task PublishQuestionMessage(string presenter, string slug, int slide, Question question)
-        {
-            var message = new QuestionMessage
-            {
-                Id = question.Uuid,
-                Presenter = presenter,
-                Slug = slug,
-                Slide = slide,
-                User = question.User,
-                Time = question.Time,
-                Text = question.Text
-            };
-
-            var json = JsonConvert.SerializeObject(message);
-            return _redis.GetDatabase().PublishAsync("shtik:messaging", json);
         }
 
         [HttpPost("{uuid}/answers")]

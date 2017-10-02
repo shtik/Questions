@@ -19,10 +19,6 @@ namespace ShtikLive.Questions
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((context, builder) =>
-                {
-                    builder.AddDockerSecrets("/run/secrets", true);
-                })
                 .UseStartup<Startup>()
                 .Build();
     }

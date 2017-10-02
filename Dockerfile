@@ -1,4 +1,4 @@
-FROM microsoft/aspnetcore-build:2 AS build
+FROM microsoft/aspnetcore-build:2.0.0 AS build
 
 WORKDIR /src
 
@@ -10,7 +10,7 @@ RUN dotnet restore
 
 RUN dotnet publish --output /app/ --configuration Release
 
-FROM microsoft/aspnetcore:2
+FROM microsoft/aspnetcore:2.0.0
 
 COPY --from=build /app /app/
 
