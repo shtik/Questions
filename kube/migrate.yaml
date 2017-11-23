@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: questions-migrate
+  namespace: shtik
+spec:
+  template:
+    metadata:
+      name: questions-migrate
+    spec:
+      containers:
+      - name: questions-migrate
+        image: shtik/questions-migrate:1.1.0
+        args: ["$(SECRET_CONNSTR)"]
+        env:
+          - name: SECRET_CONNSTR
+            valueFrom:
+              secretKeyRef:
+                name: questions-db
+                key: connstr
+      restartPolicy: OnFailure
